@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="数字简谱编辑器与钢琴试听 — 简朴桌面工具">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>简谱工作室</title>
+  <link rel="stylesheet" href="css/app.css?v=20260608">
+  <link rel="stylesheet" href="css/piano.css?v=20260608">
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div class="app-brand">
+        <div class="app-logo" aria-hidden="true">谱</div>
+        <div>
+          <div class="app-title">简谱工作室</div>
+          <div class="app-subtitle">数字简谱 · 钢琴试听</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="toolbar-group">
+          <button type="button" class="btn btn-primary" id="btnPlay" title="播放 (Ctrl+Enter)">▶ 播放</button>
+          <button type="button" class="btn btn-danger" id="btnStop" disabled title="停止 (Esc)">■ 停止</button>
+        </div>
+        <div class="toolbar-group">
+          <span class="control-label">速度</span>
+          <input type="range" id="tempo" min="80" max="480" step="10" value="220">
+          <span class="control-label" id="tempoVal">220 ms</span>
+        </div>
+        <div class="toolbar-group">
+          <span class="control-label">音量</span>
+          <input type="range" id="volume" min="0" max="100" step="1" value="85">
+          <span class="control-label" id="volumeVal">85%</span>
+        </div>
+        <div class="toolbar-group">
+          <button type="button" class="btn btn-keyboard active" id="btnKeyboardPlay" title="开启后可用键盘弹奏（见右侧说明）">⌨ 键盘弹奏</button>
+        </div>
+        <div class="toolbar-group">
+          <button type="button" class="btn" id="btnSave">保存</button>
+          <button type="button" class="btn" id="btnExport">导出</button>
+          <button type="button" class="btn" id="btnImport">导入</button>
+          <button type="button" class="btn" id="btnClear">清空</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-body">
+      <aside class="panel panel-sidebar">
+        <div class="panel-header panel-header--compact">
+          <span class="panel-title">示例曲库</span>
+        </div>
+        <div class="library-actions">
+          <button type="button" class="btn btn-sm" id="btnAddToLib" title="把当前简谱加入曲库">+ 收录</button>
+          <button type="button" class="btn btn-sm" id="btnLibExport" title="导出全部曲库">导出曲库</button>
+          <button type="button" class="btn btn-sm" id="btnLibImport" title="从文件导入曲库">导入曲库</button>
+        </div>
+        <div class="score-search">
+          <input type="search" id="scoreSearch" placeholder="搜索曲目…" autocomplete="off">
+        </div>
+        <div class="panel-body panel-body--library">
+          <ul class="score-list" id="scoreList"></ul>
+        </div>
+      </aside>
+
+      <div class="center-column">
+      <section class="panel editor-panel">
+        <div class="panel-header">
+          <div class="editor-meta">
+            <input type="text" class="editor-title-input" id="scoreTitle" value="未命名简谱" spellcheck="false">
+            <span class="editor-stats">
+              <span id="statNotes">音符 0</span>
+              ·
+              <span id="statRests">休止 0</span>
+            </span>
+          </div>
+        </div>
+        <div class="editor-tabs">
+          <button type="button" class="editor-tab is-active" data-tab="score">数字简谱</button>
+          <button type="button" class="editor-tab" data-tab="sketch">线稿 → 数字谱</button>
+        </div>
+        <div class="symbol-bar" id="symbolBar" aria-label="符号插入">
+          <span class="symbol-bar-label">快捷插入符号</span>
+        </div>
+        <div class="editor-pane is-active" id="paneScore">
+          <div class="editor-wrap">
+            <textarea
+              class="score-editor"
+              id="scoreEditor"
+              spellcheck="false"
+              placeholder="在此输入数字简谱，例如：&#10;1155665 4433221&#10;&#10;空格、换行、- 表示休止；# 半音；( ) 低八度；[ ] 高八度"
+            ></textarea>
+            <div class="progress-bar" aria-hidden="true">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+          </div>
+        </div>
+        <div class="editor-pane" id="paneSketch">
+          <div id="lineSketchRoot"></div>
+        </div>
+      </section>
+      </div>
+
+      <aside class="panel panel-help">
+        <div class="panel-header panel-header--compact">
+          <span class="panel-title">使用说明</span>
+        </div>
+        <div class="panel-body help-content">
+          <h3>键盘弹奏</h3>
+          <p>开启顶栏 <strong>⌨ 键盘弹奏</strong> 后，在<strong>非输入框</strong>焦点下按键即可演奏（底部钢琴同步发光）。在简谱框内输入时仍正常打字；按住 <span class="kbd">Alt</span> 可在输入框内弹奏。</p>
+          <table class="help-table help-table--keys">
+            <thead>
+              <tr><th>按键</th><th>音</th><th>简谱</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><span class="kbd">1</span>–<span class="kbd">7</span> 或 <span class="kbd">A</span>–<span class="kbd">J</span></td><td>中音 do–si</td><td><code>1</code>–<code>7</code></td></tr>
+              <tr><td><span class="kbd">Z</span>–<span class="kbd">M</span></td><td>低音</td><td><code>(1)</code>–<code>(7)</code></td></tr>
+              <tr><td><span class="kbd">Q</span>–<span class="kbd">U</span></td><td>高音</td><td><code>[1]</code>–<code>[7]</code></td></tr>
+              <tr><td><span class="kbd">Shift</span>+数字 / <span class="kbd">Shift</span>+Q~U</td><td>升半音</td><td><code>#1</code> 等</td></tr>
+            </tbody>
+          </table>
+          <p class="help-tip">也可直接用鼠标点击底部钢琴键。点击顶栏「键盘弹奏」可开关。</p>
+
+          <h3>基本规则</h3>
+          <p>本软件采用 C 大调数字简谱：用 1–7 表示 do–si，不记录时值强弱，通过休止控制节奏。</p>
+
+          <table class="help-table">
+            <thead>
+              <tr><th>写法</th><th>含义</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>1</code> – <code>7</code></td><td>中音 do – si</td></tr>
+              <tr><td><code>#3</code></td><td>升半音（如 #4、#5）</td></tr>
+              <tr><td><code>(5)</code></td><td>低一个八度</td></tr>
+              <tr><td><code>((5))</code></td><td>低两个八度</td></tr>
+              <tr><td><code>[1]</code></td><td>高一个八度</td></tr>
+              <tr><td><code>[[1]]</code></td><td>高两个八度</td></tr>
+              <tr><td><code>-</code> 空格 换行</td><td>休止一拍（时长由速度滑块决定）</td></tr>
+            </tbody>
+          </table>
+
+          <h3>示例</h3>
+          <p><code>1155665 4433221</code> — 小星星<br>
+          <code>1231 1231 345 345</code> — 两只老虎</p>
+
+          <h3>快捷键</h3>
+          <p>
+            <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> 播放<br>
+            <span class="kbd">Esc</span> 停止<br>
+            <span class="kbd">空格</span>（非输入框）播放 / 停止
+          </p>
+
+          <h3>线稿转数字谱</h3>
+          <p>切换到「线稿 → 数字谱」，在网格上画出旋律曲线，点<strong>转为数字简谱</strong>自动写入编辑器。</p>
+          <h3>曲库</h3>
+          <p>左侧可<strong>导出曲库</strong> / <strong>导入曲库</strong>，<strong>+ 收录</strong> 保存当前曲目。</p>
+          <h3>数据</h3>
+          <p>顶栏「导出」为当前单首简谱；编辑内容会自动保存在本机。</p>
+        </div>
+      </aside>
+    </main>
+
+    <div class="piano-strip" id="pianoBoard" aria-label="钢琴键盘"></div>
+
+    <footer class="app-status" id="appStatus">
+      <span id="statusText"><span class="status-dot"></span>正在初始化…</span>
+      <span id="statusHint"></span>
+    </footer>
+  </div>
+
+  <input type="file" id="fileImport" accept=".json,.txt,.jianpu" hidden>
+  <input type="file" id="libraryImport" accept=".json,.jianpu-library.json" hidden>
+
+  <script src="js/engine.js?v=20260609"></script>
+  <script src="js/piano-visual.js?v=20260609"></script>
+  <script src="js/keyboard-play.js?v=20260609"></script>
+  <script src="js/line-sketch.js?v=20260609"></script>
+  <script src="js/scores.js?v=20260609"></script>
+  <script src="js/app.js?v=20260609"></script>
+</body>
+</html>

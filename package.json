@@ -1,0 +1,43 @@
+{
+  "name": "jianpu-studio",
+  "productName": "简谱工作室",
+  "version": "1.0.0",
+  "description": "数字简谱编辑器与钢琴试听",
+  "author": "",
+  "license": "MIT",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable",
+    "dist:installer": "electron-builder --win nsis"
+  },
+  "build": {
+    "appId": "com.jianpu.studio",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "css/**/*",
+      "js/piano-visual.js",
+      "js/**/*",
+      "media/**/*",
+      "electron/**/*"
+    ],
+    "win": {
+      "target": [
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "artifactName": "简谱工作室-${version}-便携版.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "shortcutName": "简谱工作室"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  }
+}

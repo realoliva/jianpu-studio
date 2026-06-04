@@ -1,0 +1,186 @@
+/* 底部满宽钢琴 */
+.piano-strip {
+  flex-shrink: 0;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: #0a0a10;
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
+}
+
+.piano-dock {
+  width: 100%;
+  border: none;
+}
+
+.piano-stage {
+  position: relative;
+  width: 100%;
+  padding: 10px 6px 12px;
+  min-height: 108px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 90% 120% at 50% 120%, rgba(60, 100, 255, 0.25) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 60% at 15% 40%, rgba(255, 80, 180, 0.1) 0%, transparent 50%),
+    linear-gradient(180deg, #080810 0%, #12121c 100%);
+}
+
+.piano-fx-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.piano-glow-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  z-index: 0;
+}
+
+.piano-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 3;
+}
+
+.piano-particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: var(--p-color);
+  box-shadow: 0 0 12px var(--p-color), 0 0 24px var(--p-color);
+  animation: particle-fly 0.7s ease-out forwards;
+}
+
+.piano-spark {
+  position: absolute;
+  width: 3px;
+  height: 14px;
+  margin: -7px 0 0 -1px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--spark-color), transparent);
+  box-shadow: 0 0 10px var(--spark-color);
+  animation: spark-burst 0.55s ease-out forwards;
+  transform: rotate(var(--spark-angle));
+}
+
+@keyframes particle-fly {
+  0% { opacity: 1; transform: translate(0, 0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--p-x), var(--p-y)) scale(0.15); }
+}
+
+@keyframes spark-burst {
+  0% { opacity: 1; transform: rotate(var(--spark-angle)) translateY(0) scaleY(1); }
+  100% { opacity: 0; transform: rotate(var(--spark-angle)) translateY(calc(var(--spark-dist) * -1)) scaleY(0.3); }
+}
+
+.piano-keys-fit {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  overflow: visible;
+}
+
+.piano-keys {
+  --wc: 52;
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 96px;
+  margin: 0;
+}
+
+.piano-key {
+  position: relative;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.piano-key--white {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  background: linear-gradient(180deg, #fcfcff 0%, #e4e4ec 45%, #c8c8d4 100%);
+  border-right: 1px solid #9a9aa8;
+  border-radius: 0 0 4px 4px;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.9);
+  z-index: 1;
+}
+
+.piano-key--white:first-child {
+  border-left: 1px solid #9a9aa8;
+}
+
+.piano-key--white:hover {
+  background: linear-gradient(180deg, #fff 0%, #eeeef8 100%);
+}
+
+.piano-key--black {
+  position: absolute;
+  top: 0;
+  z-index: 5;
+  height: 58%;
+  width: calc(100% / var(--wc) * 0.58);
+  left: calc(100% / var(--wc) * var(--wi) - 100% / var(--wc) * 0.29);
+  margin: 0;
+  background: linear-gradient(180deg, #404050 0%, #181820 55%, #0a0a10 100%);
+  border-radius: 0 0 3px 3px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.55), inset 0 -2px 4px rgba(255, 255, 255, 0.08);
+}
+
+.piano-key.is-active.piano-key--white {
+  transform: translateY(2px);
+  background: linear-gradient(180deg, #fff 0%, #f0f0ff 100%);
+  box-shadow:
+    0 0 20px var(--key-glow),
+    0 0 40px var(--key-glow),
+    inset 0 0 16px var(--key-glow);
+}
+
+.piano-key.is-active.piano-key--black {
+  transform: translateY(1px);
+  box-shadow:
+    0 0 18px var(--key-glow),
+    0 0 36px var(--key-glow),
+    inset 0 0 12px var(--key-glow);
+}
+
+.piano-ripple {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  border-radius: 50%;
+  background: var(--ripple-color);
+  pointer-events: none;
+  animation: key-ripple 0.6s ease-out forwards;
+  z-index: 6;
+}
+
+@keyframes key-ripple {
+  0% { opacity: 1; transform: scale(1); box-shadow: 0 0 12px var(--ripple-color); }
+  100% { opacity: 0; transform: scale(14); box-shadow: 0 0 40px var(--ripple-color); }
+}
+
+.piano-stage.is-performance .piano-glow-bg {
+  animation: piano-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes piano-pulse {
+  50% { opacity: 0.55; }
+}
