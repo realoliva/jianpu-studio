@@ -6,7 +6,7 @@
 
 ## 在线体验
 
-部署后访问：**GitHub Pages**（见仓库 About / Actions）
+**https://realoliva.github.io/jianpu-studio/**
 
 本地运行：双击 `start.bat` 或 `python -m http.server 8765`，打开 http://localhost:8765/
 
