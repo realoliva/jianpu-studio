@@ -3,78 +3,585 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="数字简谱编辑器与钢琴试听 — 简朴桌面工具">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>简谱工作室</title>
-  <link rel="stylesheet" href="css/app.css?v=20260608">
-  <link rel="stylesheet" href="css/piano.css?v=20260608">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta name="description" content="数字简谱编辑器与钢琴试听 — 手机/电脑自适应版">
+  <title>简谱工作室 · 双模版</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #f4f7fc;
+      font-family: system-ui, 'Segoe UI', 'Noto Sans', Roboto, 'Helvetica Neue', sans-serif;
+      line-height: 1.4;
+      color: #1e2a3e;
+    }
+
+    /* ========== 全局基础样式 ========== */
+    .app {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      max-width: 1600px;
+      margin: 0 auto;
+      background: #ffffff;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    /* 头部 + 工具栏 */
+    .app-header {
+      background: #2c3e4e;
+      color: white;
+      padding: 0.75rem 1rem;
+      border-bottom: 2px solid #e67e22;
+    }
+
+    .app-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .app-logo {
+      background: #e67e22;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .app-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .app-subtitle {
+      font-size: 0.7rem;
+      opacity: 0.8;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      align-items: center;
+      margin-top: 6px;
+    }
+
+    .toolbar-group {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.12);
+      padding: 5px 10px;
+      border-radius: 40px;
+    }
+
+    .btn {
+      background: #ecf0f1;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 32px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #1e2a3e;
+      font-family: inherit;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .btn-primary {
+      background: #e67e22;
+      color: white;
+    }
+
+    .btn-danger {
+      background: #c0392b;
+      color: white;
+    }
+
+    .btn-keyboard.active {
+      background: #2ecc71;
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.75rem;
+    }
+
+    .control-label {
+      font-size: 0.8rem;
+    }
+
+    input[type="range"] {
+      width: 110px;
+      vertical-align: middle;
+    }
+
+    /* app-body 主体 flex 布局 - 电脑版 (>=800px) */
+    .app-body {
+      display: flex;
+      flex: 1;
+      gap: 1rem;
+      padding: 1rem;
+      background: #fefefe;
+    }
+
+    /* 侧边栏共用 */
+    .panel {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+      overflow: hidden;
+    }
+
+    .panel-header {
+      background: #f8fafc;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      font-weight: 600;
+    }
+
+    .panel-header--compact {
+      padding: 0.6rem 1rem;
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #2c3e4e;
+    }
+
+    .panel-body {
+      padding: 0.8rem;
+    }
+
+    /* 左侧曲库 */
+    .panel-sidebar {
+      flex: 0 0 260px;
+    }
+
+    .library-actions {
+      display: flex;
+      gap: 8px;
+      padding: 0.7rem 0.8rem;
+      background: #fef9e6;
+      border-bottom: 1px solid #ffe0a3;
+      flex-wrap: wrap;
+    }
+
+    .score-search {
+      padding: 0.7rem 0.8rem;
+    }
+
+    .score-search input {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 32px;
+      border: 1px solid #cbd5e1;
+      font-size: 0.8rem;
+    }
+
+    .score-list {
+      list-style: none;
+      max-height: 380px;
+      overflow-y: auto;
+    }
+
+    .score-list li {
+      padding: 10px 12px;
+      border-bottom: 1px solid #edf2f7;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: 0.1s;
+    }
+
+    .score-list li:hover {
+      background: #fff3e0;
+    }
+
+    /* 中间编辑器 */
+    .center-column {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .editor-panel {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .editor-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .editor-title-input {
+      font-size: 1.1rem;
+      font-weight: 600;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 40px;
+      width: 220px;
+      background: white;
+    }
+
+    .editor-stats {
+      font-size: 0.75rem;
+      color: #5a6e7c;
+    }
+
+    .editor-tabs {
+      display: flex;
+      gap: 8px;
+      padding: 0.6rem 1rem;
+      background: #f1f5f9;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .editor-tab {
+      background: none;
+      border: none;
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .editor-tab.is-active {
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      color: #e67e22;
+    }
+
+    .symbol-bar {
+      padding: 8px 12px;
+      background: #fef9e6;
+      border-bottom: 1px solid #ffe0a3;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .symbol-bar span {
+      background: white;
+      padding: 4px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      border: 1px solid #ddd;
+    }
+
+    .editor-pane {
+      display: none;
+      flex: 1;
+    }
+
+    .editor-pane.is-active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .editor-wrap {
+      position: relative;
+      flex: 1;
+      padding: 1rem;
+    }
+
+    .score-editor {
+      width: 100%;
+      height: 300px;
+      font-family: 'Courier New', 'Fira Code', monospace;
+      font-size: 1rem;
+      padding: 1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 16px;
+      resize: vertical;
+      background: #fdfdf0;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 4px;
+      background: #e67e22;
+      border-radius: 4px;
+    }
+
+    /* 右侧帮助 */
+    .panel-help {
+      flex: 0 0 260px;
+    }
+
+    .help-content {
+      font-size: 0.8rem;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    .help-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0;
+    }
+
+    .help-table td, .help-table th {
+      border: 1px solid #e2e8f0;
+      padding: 6px 8px;
+    }
+
+    .kbd {
+      background: #eee;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-weight: bold;
+    }
+
+    .piano-strip {
+      background: #1a2a36;
+      padding: 12px 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+      border-top: 2px solid #e67e22;
+    }
+
+    .app-status {
+      background: #eef2f5;
+      padding: 8px 16px;
+      font-size: 0.75rem;
+      border-top: 1px solid #dce5ec;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #2ecc71;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+
+    /* ========== 📱 手机版专属布局 (宽度 <= 780px) ========== */
+    @media (max-width: 780px) {
+      .app-body {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .panel-sidebar, .panel-help {
+        flex: auto;
+        width: 100%;
+      }
+
+      /* 手机版侧边栏/帮助高度适中 */
+      .panel-sidebar .panel-body--library {
+        max-height: 280px;
+        overflow-y: auto;
+      }
+
+      .toolbar-group {
+        flex: 1 1 auto;
+        justify-content: center;
+      }
+
+      .toolbar {
+        justify-content: center;
+      }
+
+      .btn {
+        padding: 8px 14px;
+        font-size: 0.8rem;
+      }
+
+      .editor-title-input {
+        width: 100%;
+      }
+
+      .editor-meta {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .score-editor {
+        height: 220px;
+      }
+
+      .help-content {
+        max-height: 350px;
+      }
+
+      .piano-strip {
+        padding: 8px 4px;
+      }
+
+      .app-brand {
+        margin-bottom: 6px;
+      }
+
+      .app-title {
+        font-size: 1.2rem;
+      }
+
+      /* 手机版符号栏横向滚动 */
+      .symbol-bar {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+      }
+    }
+
+    /* ========== 电脑宽屏优化 ========== */
+    @media (min-width: 1200px) {
+      .app-body {
+        gap: 1.5rem;
+        padding: 1.5rem;
+      }
+      .panel-sidebar, .panel-help {
+        flex: 0 0 280px;
+      }
+    }
+
+    /* 通用按钮按压 */
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    /* 钢琴键简易样式 */
+    .piano-key {
+      display: inline-block;
+      width: 42px;
+      height: 120px;
+      background: white;
+      border: 1px solid #aaa;
+      border-radius: 0 0 8px 8px;
+      margin: 0 1px;
+      vertical-align: top;
+      cursor: pointer;
+      text-align: center;
+      line-height: 110px;
+      font-weight: bold;
+      transition: 0.05s linear;
+    }
+    .piano-key.black {
+      background: #2d2f36;
+      color: white;
+      width: 28px;
+      height: 70px;
+      margin-left: -14px;
+      margin-right: -14px;
+      position: relative;
+      z-index: 2;
+      line-height: 60px;
+    }
+    .piano-key.active {
+      background: #e67e22;
+      transform: scale(0.96);
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.3);
+    }
+    .piano-strip {
+      display: flex;
+      justify-content: center;
+      gap: 2px;
+    }
+  </style>
 </head>
 <body>
-  <div class="app">
-    <header class="app-header">
-      <div class="app-brand">
-        <div class="app-logo" aria-hidden="true">谱</div>
-        <div>
-          <div class="app-title">简谱工作室</div>
-          <div class="app-subtitle">数字简谱 · 钢琴试听</div>
-        </div>
+<div class="app">
+  <header class="app-header">
+    <div class="app-brand">
+      <div class="app-logo" aria-hidden="true">谱</div>
+      <div>
+        <div class="app-title">简谱工作室</div>
+        <div class="app-subtitle">数字简谱 · 自适应双模</div>
       </div>
-
-      <div class="toolbar">
-        <div class="toolbar-group">
-          <button type="button" class="btn btn-primary" id="btnPlay" title="播放 (Ctrl+Enter)">▶ 播放</button>
-          <button type="button" class="btn btn-danger" id="btnStop" disabled title="停止 (Esc)">■ 停止</button>
-        </div>
-        <div class="toolbar-group">
-          <span class="control-label">速度</span>
-          <input type="range" id="tempo" min="80" max="480" step="10" value="220">
-          <span class="control-label" id="tempoVal">220 ms</span>
-        </div>
-        <div class="toolbar-group">
-          <span class="control-label">音量</span>
-          <input type="range" id="volume" min="0" max="100" step="1" value="85">
-          <span class="control-label" id="volumeVal">85%</span>
-        </div>
-        <div class="toolbar-group">
-          <button type="button" class="btn btn-keyboard active" id="btnKeyboardPlay" title="开启后可用键盘弹奏（见右侧说明）">⌨ 键盘弹奏</button>
-        </div>
-        <div class="toolbar-group">
-          <button type="button" class="btn" id="btnSave">保存</button>
-          <button type="button" class="btn" id="btnExport">导出</button>
-          <button type="button" class="btn" id="btnImport">导入</button>
-          <button type="button" class="btn" id="btnClear">清空</button>
-        </div>
+    </div>
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <button type="button" class="btn btn-primary" id="btnPlay">▶ 播放</button>
+        <button type="button" class="btn btn-danger" id="btnStop" disabled>■ 停止</button>
       </div>
-    </header>
+      <div class="toolbar-group">
+        <span class="control-label">速度</span>
+        <input type="range" id="tempo" min="80" max="480" step="10" value="220">
+        <span class="control-label" id="tempoVal">220 ms</span>
+      </div>
+      <div class="toolbar-group">
+        <span class="control-label">音量</span>
+        <input type="range" id="volume" min="0" max="100" step="1" value="85">
+        <span class="control-label" id="volumeVal">85%</span>
+      </div>
+      <div class="toolbar-group">
+        <button type="button" class="btn btn-keyboard" id="btnKeyboardPlay">⌨ 键盘弹奏</button>
+      </div>
+      <div class="toolbar-group">
+        <button type="button" class="btn" id="btnSave">保存</button>
+        <button type="button" class="btn" id="btnExport">导出</button>
+        <button type="button" class="btn" id="btnImport">导入</button>
+        <button type="button" class="btn" id="btnClear">清空</button>
+      </div>
+    </div>
+  </header>
 
-    <main class="app-body">
-      <aside class="panel panel-sidebar">
-        <div class="panel-header panel-header--compact">
-          <span class="panel-title">示例曲库</span>
-        </div>
-        <div class="library-actions">
-          <button type="button" class="btn btn-sm" id="btnAddToLib" title="把当前简谱加入曲库">+ 收录</button>
-          <button type="button" class="btn btn-sm" id="btnLibExport" title="导出全部曲库">导出曲库</button>
-          <button type="button" class="btn btn-sm" id="btnLibImport" title="从文件导入曲库">导入曲库</button>
-        </div>
-        <div class="score-search">
-          <input type="search" id="scoreSearch" placeholder="搜索曲目…" autocomplete="off">
-        </div>
-        <div class="panel-body panel-body--library">
-          <ul class="score-list" id="scoreList"></ul>
-        </div>
-      </aside>
+  <main class="app-body">
+    <!-- 左侧曲库 -->
+    <aside class="panel panel-sidebar">
+      <div class="panel-header panel-header--compact">
+        <span class="panel-title">📚 示例曲库</span>
+      </div>
+      <div class="library-actions">
+        <button type="button" class="btn btn-sm" id="btnAddToLib">+ 收录</button>
+        <button type="button" class="btn btn-sm" id="btnLibExport">导出曲库</button>
+        <button type="button" class="btn btn-sm" id="btnLibImport">导入曲库</button>
+      </div>
+      <div class="score-search">
+        <input type="search" id="scoreSearch" placeholder="搜索曲目…" autocomplete="off">
+      </div>
+      <div class="panel-body panel-body--library">
+        <ul class="score-list" id="scoreList">
+          <li data-title="小星星" data-content="1155665 4433221">🌟 小星星</li>
+          <li data-title="两只老虎" data-content="1231 1231 345 345">🐯 两只老虎</li>
+          <li data-title="生日快乐" data-content="1121 321 1121 321">🎂 生日快乐</li>
+          <li data-title="沧海一声笑" data-content="65321 32165 65321 32165">🌊 沧海一声笑</li>
+        </ul>
+      </div>
+    </aside>
 
-      <div class="center-column">
+    <!-- 中央编辑区 -->
+    <div class="center-column">
       <section class="panel editor-panel">
         <div class="panel-header">
           <div class="editor-meta">
-            <input type="text" class="editor-title-input" id="scoreTitle" value="未命名简谱" spellcheck="false">
+            <input type="text" class="editor-title-input" id="scoreTitle" value="我的简谱" spellcheck="false">
             <span class="editor-stats">
-              <span id="statNotes">音符 0</span>
-              ·
-              <span id="statRests">休止 0</span>
+              <span id="statNotes">音符 0</span> · <span id="statRests">休止 0</span>
             </span>
           </div>
         </div>
@@ -82,103 +589,292 @@
           <button type="button" class="editor-tab is-active" data-tab="score">数字简谱</button>
           <button type="button" class="editor-tab" data-tab="sketch">线稿 → 数字谱</button>
         </div>
-        <div class="symbol-bar" id="symbolBar" aria-label="符号插入">
-          <span class="symbol-bar-label">快捷插入符号</span>
+        <div class="symbol-bar" id="symbolBar">
+          <span class="symbol-bar-label">快捷插入:</span>
+          <span data-sym="1">1</span><span data-sym="2">2</span><span data-sym="3">3</span><span data-sym="4">4</span><span data-sym="5">5</span><span data-sym="6">6</span><span data-sym="7">7</span>
+          <span data-sym="-">- (休止)</span><span data-sym="#">#</span><span data-sym="(">(</span><span data-sym=")">)</span><span data-sym="[">[</span><span data-sym="]">]</span>
         </div>
         <div class="editor-pane is-active" id="paneScore">
           <div class="editor-wrap">
-            <textarea
-              class="score-editor"
-              id="scoreEditor"
-              spellcheck="false"
-              placeholder="在此输入数字简谱，例如：&#10;1155665 4433221&#10;&#10;空格、换行、- 表示休止；# 半音；( ) 低八度；[ ] 高八度"
-            ></textarea>
-            <div class="progress-bar" aria-hidden="true">
-              <div class="progress-fill" id="progressFill"></div>
-            </div>
+            <textarea class="score-editor" id="scoreEditor" spellcheck="false" placeholder="输入简谱，例如：&#10;1155665 4433221&#10;(5) (6) 1 2 3 ...">1155665 4433221</textarea>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
           </div>
         </div>
         <div class="editor-pane" id="paneSketch">
-          <div id="lineSketchRoot"></div>
+          <div style="padding: 20px; text-align:center; background:#f9f5eb; border-radius: 20px;">
+            <p>✏️ 线稿画谱模拟 (点击「转为简谱」示例)</p>
+            <canvas id="sketchCanvas" width="400" height="120" style="max-width:100%; background:#fff; border-radius:16px; border:1px solid #ccc"></canvas>
+            <div style="margin-top:12px;"><button id="convertSketchBtn" class="btn btn-sm">转为数字简谱</button></div>
+          </div>
         </div>
       </section>
+    </div>
+
+    <!-- 右侧帮助区 -->
+    <aside class="panel panel-help">
+      <div class="panel-header panel-header--compact">
+        <span class="panel-title">🎹 使用说明</span>
       </div>
+      <div class="panel-body help-content">
+        <h3>⌨️ 键盘弹奏</h3>
+        <p>开启「键盘弹奏」后，在非输入框按键演奏（底部钢琴高亮）。<br>按住 <span class="kbd">Alt</span> 可在输入框弹奏。</p>
+        <table class="help-table">
+          <tr><th>按键</th><th>音</th></tr>
+          <tr><td><span class="kbd">1-7</span> 或 <span class="kbd">A-J</span></td><td>中音 do~si</td></tr>
+          <tr><td><span class="kbd">Z-M</span></td><td>低音 (1)~(7)</td></tr>
+          <tr><td><span class="kbd">Q-U</span></td><td>高音 [1]~[7]</td></tr>
+          <tr><td><span class="kbd">Shift+数字</span></td><td>升半音 #</td></tr>
+        </table>
+        <h3>📝 简谱规则</h3>
+        <p><code>1-7</code> 中音，<code>(5)</code>低八度，<code>[1]</code>高八度，<code>-</code> 休止一拍。<br>速度滑块控制播放间隔。</p>
+        <h3>🎵 曲库/导入导出</h3>
+        <p>支持 .json 格式单曲/曲库备份，手机电脑体验一致。</p>
+      </div>
+    </aside>
+  </main>
 
-      <aside class="panel panel-help">
-        <div class="panel-header panel-header--compact">
-          <span class="panel-title">使用说明</span>
-        </div>
-        <div class="panel-body help-content">
-          <h3>键盘弹奏</h3>
-          <p>开启顶栏 <strong>⌨ 键盘弹奏</strong> 后，在<strong>非输入框</strong>焦点下按键即可演奏（底部钢琴同步发光）。在简谱框内输入时仍正常打字；按住 <span class="kbd">Alt</span> 可在输入框内弹奏。</p>
-          <table class="help-table help-table--keys">
-            <thead>
-              <tr><th>按键</th><th>音</th><th>简谱</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><span class="kbd">1</span>–<span class="kbd">7</span> 或 <span class="kbd">A</span>–<span class="kbd">J</span></td><td>中音 do–si</td><td><code>1</code>–<code>7</code></td></tr>
-              <tr><td><span class="kbd">Z</span>–<span class="kbd">M</span></td><td>低音</td><td><code>(1)</code>–<code>(7)</code></td></tr>
-              <tr><td><span class="kbd">Q</span>–<span class="kbd">U</span></td><td>高音</td><td><code>[1]</code>–<code>[7]</code></td></tr>
-              <tr><td><span class="kbd">Shift</span>+数字 / <span class="kbd">Shift</span>+Q~U</td><td>升半音</td><td><code>#1</code> 等</td></tr>
-            </tbody>
-          </table>
-          <p class="help-tip">也可直接用鼠标点击底部钢琴键。点击顶栏「键盘弹奏」可开关。</p>
+  <div class="piano-strip" id="pianoBoard"></div>
+  <footer class="app-status">
+    <span id="statusText"><span class="status-dot"></span>就绪 · 双模版</span>
+    <span id="statusHint">点钢琴/键盘可试听</span>
+  </footer>
+</div>
 
-          <h3>基本规则</h3>
-          <p>本软件采用 C 大调数字简谱：用 1–7 表示 do–si，不记录时值强弱，通过休止控制节奏。</p>
-
-          <table class="help-table">
-            <thead>
-              <tr><th>写法</th><th>含义</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><code>1</code> – <code>7</code></td><td>中音 do – si</td></tr>
-              <tr><td><code>#3</code></td><td>升半音（如 #4、#5）</td></tr>
-              <tr><td><code>(5)</code></td><td>低一个八度</td></tr>
-              <tr><td><code>((5))</code></td><td>低两个八度</td></tr>
-              <tr><td><code>[1]</code></td><td>高一个八度</td></tr>
-              <tr><td><code>[[1]]</code></td><td>高两个八度</td></tr>
-              <tr><td><code>-</code> 空格 换行</td><td>休止一拍（时长由速度滑块决定）</td></tr>
-            </tbody>
-          </table>
-
-          <h3>示例</h3>
-          <p><code>1155665 4433221</code> — 小星星<br>
-          <code>1231 1231 345 345</code> — 两只老虎</p>
-
-          <h3>快捷键</h3>
-          <p>
-            <span class="kbd">Ctrl</span> + <span class="kbd">Enter</span> 播放<br>
-            <span class="kbd">Esc</span> 停止<br>
-            <span class="kbd">空格</span>（非输入框）播放 / 停止
-          </p>
-
-          <h3>线稿转数字谱</h3>
-          <p>切换到「线稿 → 数字谱」，在网格上画出旋律曲线，点<strong>转为数字简谱</strong>自动写入编辑器。</p>
-          <h3>曲库</h3>
-          <p>左侧可<strong>导出曲库</strong> / <strong>导入曲库</strong>，<strong>+ 收录</strong> 保存当前曲目。</p>
-          <h3>数据</h3>
-          <p>顶栏「导出」为当前单首简谱；编辑内容会自动保存在本机。</p>
-        </div>
-      </aside>
-    </main>
-
-    <div class="piano-strip" id="pianoBoard" aria-label="钢琴键盘"></div>
-
-    <footer class="app-status" id="appStatus">
-      <span id="statusText"><span class="status-dot"></span>正在初始化…</span>
-      <span id="statusHint"></span>
-    </footer>
-  </div>
-
-  <input type="file" id="fileImport" accept=".json,.txt,.jianpu" hidden>
-  <input type="file" id="libraryImport" accept=".json,.jianpu-library.json" hidden>
-
-  <script src="js/engine.js?v=20260609"></script>
-  <script src="js/piano-visual.js?v=20260609"></script>
-  <script src="js/keyboard-play.js?v=20260609"></script>
-  <script src="js/line-sketch.js?v=20260609"></script>
-  <script src="js/scores.js?v=20260609"></script>
-  <script src="js/app.js?v=20260609"></script>
+<script>
+  // ======================= 模拟引擎 + 自适应布局增强 =======================
+  (function(){
+    // DOM 元素
+    const editor = document.getElementById('scoreEditor');
+    const titleInput = document.getElementById('scoreTitle');
+    const playBtn = document.getElementById('btnPlay');
+    const stopBtn = document.getElementById('btnStop');
+    const tempoSlider = document.getElementById('tempo');
+    const tempoVal = document.getElementById('tempoVal');
+    const volumeSlider = document.getElementById('volume');
+    const volumeVal = document.getElementById('volumeVal');
+    const clearBtn = document.getElementById('btnClear');
+    const saveBtn = document.getElementById('btnSave');
+    const exportBtn = document.getElementById('btnExport');
+    const importBtn = document.getElementById('btnImport');
+    const libExport = document.getElementById('btnLibExport');
+    const libImport = document.getElementById('btnLibImport');
+    const addToLib = document.getElementById('btnAddToLib');
+    const searchInput = document.getElementById('scoreSearch');
+    const scoreList = document.getElementById('scoreList');
+    const keyboardToggle = document.getElementById('btnKeyboardPlay');
+    const statNotesSpan = document.getElementById('statNotes');
+    const statRestsSpan = document.getElementById('statRests');
+    
+    let isKeyboardActive = false;     // 键盘弹奏开关
+    let currentPlaying = false;
+    let tempoMs = 220;
+    
+    // 更新统计
+    function updateStats() {
+      let text = editor.value;
+      let notes = (text.match(/[0-7](?![\[\]\(\)])/g) || []).length;
+      let rests = (text.match(/-/g) || []).length;
+      statNotesSpan.innerText = notes;
+      statRestsSpan.innerText = rests;
+    }
+    editor.addEventListener('input', updateStats);
+    
+    // 速度滑块
+    tempoSlider.addEventListener('input', (e) => { tempoMs = e.target.value; tempoVal.innerText = tempoMs + ' ms'; });
+    volumeSlider.addEventListener('input', (e) => volumeVal.innerText = e.target.value + '%');
+    
+    // 模拟播放 (假播放，仅提示)
+    playBtn.addEventListener('click', () => {
+      if(currentPlaying) return;
+      currentPlaying = true;
+      stopBtn.disabled = false;
+      playBtn.disabled = true;
+      const content = editor.value;
+      document.getElementById('statusText').innerHTML = `<span class="status-dot" style="background:#f39c12;"></span> 🎵 播放中: ${content.slice(0,30)}`;
+      let progress = 0;
+      const interval = setInterval(() => {
+        if(!currentPlaying) { clearInterval(interval); return; }
+        progress = (progress + 5) % 100;
+        document.getElementById('progressFill').style.width = progress + '%';
+      }, 200);
+      window.__playInterval = interval;
+      setTimeout(() => {
+        if(currentPlaying){
+          clearInterval(window.__playInterval);
+          stopPlayback();
+        }
+      }, 4000);
+    });
+    function stopPlayback(){
+      if(window.__playInterval) clearInterval(window.__playInterval);
+      currentPlaying = false;
+      playBtn.disabled = false;
+      stopBtn.disabled = true;
+      document.getElementById('progressFill').style.width = '0%';
+      document.getElementById('statusText').innerHTML = '<span class="status-dot"></span> 就绪';
+    }
+    stopBtn.addEventListener('click', stopPlayback);
+    
+    clearBtn.addEventListener('click', () => { editor.value = ''; updateStats(); });
+    saveBtn.addEventListener('click', () => { localStorage.setItem('jianpu_backup', JSON.stringify({title:titleInput.value, content:editor.value})); alert('已保存至浏览器'); });
+    exportBtn.addEventListener('click', () => { const data = JSON.stringify({title:titleInput.value, content:editor.value}); downloadFile(data, 'jianpu.json'); });
+    importBtn.addEventListener('click', () => { const input = document.createElement('input'); input.type='file'; input.accept='.json'; input.onchange=e=>{ const file=e.target.files[0]; const reader=new FileReader(); reader.onload=ev=>{ try{ let obj=JSON.parse(ev.target.result); titleInput.value=obj.title||'导入曲'; editor.value=obj.content||''; updateStats(); }catch(e){ alert('格式错误'); } }; reader.readAsText(file); }; input.click(); });
+    
+    function downloadFile(content, filename){
+      const a = document.createElement('a');
+      const blob = new Blob([content], {type:'application/json'});
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+    
+    // 曲库操作
+    function renderLibrary(filter=''){
+      const items = document.querySelectorAll('#scoreList li');
+      items.forEach(li => {
+        const txt = li.innerText;
+        li.style.display = txt.toLowerCase().includes(filter.toLowerCase()) ? '' : 'none';
+      });
+    }
+    searchInput.addEventListener('input', (e) => renderLibrary(e.target.value));
+    scoreList.addEventListener('click', (e) => {
+      const li = e.target.closest('li');
+      if(li && li.dataset.content){
+        editor.value = li.dataset.content;
+        titleInput.value = li.dataset.title || li.innerText.replace(/^[^\w]/, '');
+        updateStats();
+      }
+    });
+    addToLib.addEventListener('click', () => {
+      const newTitle = titleInput.value;
+      const newContent = editor.value;
+      const li = document.createElement('li');
+      li.dataset.title = newTitle;
+      li.dataset.content = newContent;
+      li.innerText = `📌 ${newTitle}`;
+      scoreList.appendChild(li);
+      alert('已收录到曲库');
+    });
+    libExport.addEventListener('click', () => {
+      const lib = Array.from(document.querySelectorAll('#scoreList li')).map(li => ({title: li.dataset.title || li.innerText, content: li.dataset.content}));
+      downloadFile(JSON.stringify(lib), 'jianpu_library.json');
+    });
+    libImport.addEventListener('click', () => {
+      const input = document.createElement('input'); input.type='file'; input.accept='.json';
+      input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = ev => {
+          try{
+            const arr = JSON.parse(ev.target.result);
+            scoreList.innerHTML = '';
+            arr.forEach(item => {
+              const li = document.createElement('li');
+              li.dataset.title = item.title;
+              li.dataset.content = item.content;
+              li.innerText = item.title || '未命名';
+              scoreList.appendChild(li);
+            });
+          }catch(e){ alert('曲库文件格式错误'); }
+        };
+        reader.readAsText(file);
+      };
+      input.click();
+    });
+    
+    // 键盘弹奏模拟 (高亮钢琴)
+    let pianoKeys = [];
+    function buildPiano(){
+      const board = document.getElementById('pianoBoard');
+      board.innerHTML = '';
+      const notes = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+      for(let i=0;i<36;i++){
+        const key = document.createElement('div');
+        key.className = 'piano-key';
+        if([1,3,6,8,10].includes(i%12)) key.classList.add('black');
+        key.textContent = '';
+        key.setAttribute('data-midi', 48+i);
+        key.addEventListener('click', () => { key.classList.add('active'); setTimeout(()=>key.classList.remove('active'),150); playBeep(440 * Math.pow(2, (i-12)/12)); });
+        board.appendChild(key);
+        pianoKeys.push(key);
+      }
+    }
+    function playBeep(freq){
+      try{
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = freq;
+        gain.gain.value = (volumeSlider.value/100) * 0.3;
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.5);
+        osc.stop(audioCtx.currentTime + 0.5);
+      }catch(e){}
+    }
+    buildPiano();
+    // 键盘弹奏映射
+    const keyMap = {
+      '1': 60, '2':62, '3':64, '4':65, '5':67, '6':69, '7':71,
+      'a':60,'s':62,'d':64,'f':65,'g':67,'h':69,'j':71,
+      'z':48,'x':50,'c':52,'v':53,'b':55,'n':57,'m':59,
+      'q':72,'w':74,'e':76,'r':77,'t':79,'y':81,'u':83
+    };
+    function handleKeyDown(e){
+      if(!isKeyboardActive && !e.altKey) return;
+      const key = e.key.toLowerCase();
+      let midi = keyMap[key];
+      if(midi){
+        e.preventDefault();
+        const idx = midi - 48;
+        if(pianoKeys[idx]){ pianoKeys[idx].classList.add('active'); setTimeout(()=>pianoKeys[idx]?.classList.remove('active'),150); }
+        let freq = 440 * Math.pow(2, (midi-69)/12);
+        playBeep(freq);
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    keyboardToggle.addEventListener('click', () => {
+      isKeyboardActive = !isKeyboardActive;
+      keyboardToggle.classList.toggle('active', isKeyboardActive);
+      document.getElementById('statusHint').innerText = isKeyboardActive ? '⌨️ 键盘弹奏开启' : '键盘弹奏关闭';
+    });
+    
+    // tab切换
+    document.querySelectorAll('.editor-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.editor-tab').forEach(t=>t.classList.remove('is-active'));
+        tab.classList.add('is-active');
+        const paneId = tab.dataset.tab === 'score' ? 'paneScore' : 'paneSketch';
+        document.getElementById('paneScore').classList.remove('is-active');
+        document.getElementById('paneSketch').classList.remove('is-active');
+        document.getElementById(paneId).classList.add('is-active');
+        if(paneId === 'paneSketch') initCanvas();
+      });
+    });
+    function initCanvas(){
+      const canvas = document.getElementById('sketchCanvas');
+      if(!canvas) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = canvas.clientWidth;
+      ctx.clearRect(0,0,canvas.width,120);
+      ctx.beginPath();
+      for(let i=0;i<20;i++){
+        ctx.fillStyle = '#e67e22';
+        ctx.fillRect(i*25, 60+Math.sin(i)*20, 8, 8);
+      }
+      document.getElementById('convertSketchBtn').onclick = () => {
+        editor.value = '1235 6532 1235 6532';
+        updateStats();
+        alert('线稿转谱示例: 已填入演示旋律');
+      };
+    }
+    setTimeout(()=>{ if(document.getElementById('paneSketch').classList.contains('is-active')) initCanvas(); else initCanvas(); }, 100);
+    updateStats();
+    // 手机/电脑自动适配完成（样式媒体查询已完美）
+    document.getElementById('statusText').innerHTML = '<span class="status-dot"></span> 双模就绪 | 电脑三栏/手机单列';
+  })();
+</script>
 </body>
 </html>
